@@ -31,53 +31,53 @@
                     <form class="form" action="">
                         <template v-if="currentStep === 1">
                             <label for="">電子信箱</label>
-                            <input type="text" placeholder="hello@exsample.com" />
+                            <input type="text" placeholder="" v-model="form.email"/>
                             <label for="">密碼</label>
-                            <input type="text" placeholder="請輸入密碼" />
+                            <input type="password" placeholder="請輸入密碼" v-model="form.password"/>
                             <label for="">確認密碼</label>
-                            <input type="text" placeholder="請再輸入一次密碼" />
+                            <input type="password" placeholder="請再輸入一次密碼" v-model="form.checkPassword"/>
 
-                            <button class="btn gray" @click="currentStep = 2">下一步</button>
+                            <button class="btn gray" @click.prevent="currentStep = 2">下一步</button>
                         </template>
 
                         <template v-if="currentStep === 2">
                             <label for="">姓名</label>
-                            <input type="text" placeholder="請輸入姓名" />
+                            <input type="text" placeholder="請輸入姓名" v-model="form.name"/>
                             <label for="">手機號碼</label>
-                            <input type="text" placeholder="請輸入手機號碼" />
+                            <input type="text" placeholder="請輸入手機號碼" v-model="form.phone"/>
                             <label for="">生日</label>
                             <div class="flex">
-                                <select name="" id="">
-                                    <option value="1990年" selected></option>
+                                <select name="" id="" v-model="form.year">
+                                    <option v-for="year in years" :key="year" :value="`${year}`">{{ year }}年</option>
                                 </select>
-                                <select name="" id="">
-                                    <option value="8月" selected></option>
+                                <select name="" id="" v-model="form.month">
+                                    <option v-for="month in months" :key="month" :value="`${month}`">{{ month }}月</option>
                                 </select>
-                                <select name="" id="">
-                                    <option value="15日" selected></option>
+                                <select name="" id="" v-model="form.day">
+                                    <option v-for="day in days" :key="day" :value="`${day}`">{{ day }}日</option>
                                 </select>
                             </div>
 
                             <label for="">地址</label>
                             <div class="flex">
-                                <select name="" id="">
-                                    <option value="高雄市" selected></option>
+                                <select name="" id="" v-model="form.city" @change="selectCity">
+                                    <option  v-for="(city, index) in cityData" :key="index" :value="city.CityName">{{ city.CityName }}</option>
                                 </select>
-                                <select name="" id="">
-                                    <option value="新興區" selected></option>
+                                <select name="" id="" v-model="form.address.zipcode">
+                                    <option  v-for="(area, index) in areaData" :key="index" :value="area.ZipCode">{{ area.AreaName}}</option>
                                 </select>
                             </div>
 
-                            <input type="text" placeholder="請輸入詳細地址" />
+                            <input type="text" placeholder="請輸入詳細地址" v-model="form.address.detail" />
 
                             <label for="" class="read"
                                 ><input type="checkbox" /> 我已閱讀並同意本站使用規範</label
                             >
 
-                            <button class="btn yellow">完成註冊</button>
+                            <button class="btn yellow" @click.prevent="register">完成註冊</button>
                         </template>
 
-                        <div class="has-account">已經有會員了嗎? <a 立即登入 /></div>
+                        <div class="has-account">已經有會員了嗎? <RouterLink to="/login">立即登入</RouterLink></div>
                     </form>
                 </div>
             </div>
@@ -85,17 +85,72 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script lang="ts" setup>
+import { ref } from "vue";
+import router from "@/router";
 
-export default defineComponent({
-    components: {},
-    setup() {
-        const currentStep = ref(1);
+import { useCommon } from "../composables/useCommon"
 
-        return { currentStep };
-    },
+import type { SignForm } from "@/types/User/user.types";
+import { signup } from "@/api/User/auth";
+
+
+let { cityData, years, months, days } = useCommon();
+
+const currentStep = ref(1);
+
+let form = ref<SignForm>({
+    name: null,
+    email: null,
+    password: null,
+    checkPassword: null,
+    phone: null,
+    year: null,
+    month: null,
+    day: null,
+    birthday: null,
+    city: null,
+    area: null,
+    address: {
+        zipcode: null,
+        detail: null,
+    }
 });
+
+let areaData = ref([]);
+
+
+const selectCity = (): void => {
+    let { city } = form.value;
+    let choice = cityData.value.find(item => city === item.CityName);
+
+    areaData.value = choice.AreaList;
+};
+
+const register = async() => {
+    let params:SignForm = {
+        name: form.value.name,
+        email: form.value.email,
+        password: form.value.password,
+        phone: form.value.phone,
+        birthday: `${form.value.year}/${form.value.month}/${form.value.day}`,
+        address: {
+            zipcode: form.value.address.zipcode,
+            detail: form.value.address.detail,
+        }
+    }
+
+    const { status, result, token } = await signup(params);
+
+    if(status) {
+        localStorage.setItem("User", result);
+        localStorage.setItem("Token", token);
+
+        router.push('./room');
+    }
+};
+
+
 </script>
 
 <style lang="scss">
@@ -124,7 +179,7 @@ export default defineComponent({
         min-height: 1px;
         display: flex;
 
-        overflow: auto;
+        // overflow: auto;
 
         .img-wrap {
             width: 50%;
