@@ -1,21 +1,21 @@
 export interface SignForm {
-    name:     string;
-    email:    string;
-    password: string;
-    checkPassword?: string;
-    phone:    string;
-    year?: string | number;
-    month?: string | number;
-    day?: string | number;
-    birthday: string;
-    city?: string;
-    area?: string;
+    name:     string | null;
+    email:    string | null;
+    password: string | null;
+    checkPassword?: string | null;
+    phone:    string | null;
+    year?: string | number | null;
+    month?: string | number | null;
+    day?: string | number | null;
+    birthday: string | null;
+    city?: string | null;
+    area?: string | null;
     address:  Address;
 }
 
 export interface Address {
-    zipcode: number;
-    detail:  string;
+    zipcode: string | null;
+    detail:  string | null;
 }
 
 export interface User {
@@ -38,8 +38,8 @@ export interface Result {
 }
 
 export interface Address {
-    zipcode: number;
-    detail:  string;
+    zipcode: string | null;
+    detail:  string | null;
     county:  string;
     city:    string;
 }
