@@ -57,7 +57,7 @@ const Login = async() => {
     const { status, result, token } = await login(loginForm.value);
 
     if(status) {
-        localStorage.setItem("User", result);
+        localStorage.setItem("User", JSON.stringify(result));
         localStorage.setItem("Token", token);
 
         router.push('./room');

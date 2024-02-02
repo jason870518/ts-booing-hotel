@@ -89,7 +89,7 @@
 import { ref } from "vue";
 import router from "@/router";
 
-import { useCommon } from "../composables/useCommon"
+import { useCommon } from "@/composables/useCommon"
 
 import type { SignForm } from "@/types/User/user.types";
 import { signup } from "@/api/User/auth";
@@ -143,7 +143,7 @@ const register = async() => {
     const { status, result, token } = await signup(params);
 
     if(status) {
-        localStorage.setItem("User", result);
+        localStorage.setItem("User", JSON.stringify(result));
         localStorage.setItem("Token", token);
 
         router.push('./room');
