@@ -20,7 +20,7 @@
                         <label for="">電子信箱</label>
                         <input type="text" placeholder="請輸入電子信箱" v-model="loginForm.email"/>
                         <label for="">密碼</label>
-                        <input type="text" placeholder="請輸入密碼" v-model="loginForm.password"/>
+                        <input type="password" placeholder="請輸入密碼" v-model="loginForm.password"/>
 
                         <div class="func">
                             <div class="remember-account">
@@ -33,7 +33,7 @@
 
                         <button class="btn gray" @click.prevent="Login">會員登入</button>
 
-                        <div class="has-account">沒有會員嗎? <a 前往註冊 /></div>
+                        <div class="has-account">沒有會員嗎? <RouterLink to="/register">前往註冊</RouterLink></div>
                     </form>
                 </div>
             </div>
@@ -43,8 +43,10 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import router from "@/router";
 
-import { apiLogin } from "@/api/auth"
+import { login } from "@/api/User/auth"
+
 
 const loginForm = ref({
     email: null,
@@ -52,9 +54,14 @@ const loginForm = ref({
 });
 
 const Login = async() => {
-    const data = await apiLogin(loginForm.value);
+    const { status, result, token } = await login(loginForm.value);
 
-    console.log(data)
+    if(status) {
+        localStorage.setItem("User", result);
+        localStorage.setItem("Token", token);
+
+        router.push('./room');
+    }
 };
 
 </script>
@@ -87,7 +94,7 @@ const Login = async() => {
         min-height: 1px;
         display: flex;
 
-        overflow: auto;
+        // overflow: auto;
 
         .img-wrap {
             width: 50%;
