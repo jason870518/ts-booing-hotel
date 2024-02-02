@@ -2,7 +2,9 @@
     <div class="register-page">
         <nav class="top-nav">
             <div class="logo">
-                <img src="@/assets/img/logo.png" alt="" />
+                <RouterLink class="go-order" to="/">
+                    <img src="@/assets/img/logo.png" alt="" />
+                </RouterLink>
             </div>
         </nav>
 
